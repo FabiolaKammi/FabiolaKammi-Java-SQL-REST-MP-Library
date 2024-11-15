@@ -28,13 +28,14 @@ public class BookDAO {
      * @return all Books.
      */
     public List<Book> getAllBooks(){
-        Connection connection = ConnectionUtil.getConnection();
         List<Book> books = new ArrayList<>();
-        try {
+        String sql = "SELECT * FROM Book";
+        try (Connection connection = ConnectionUtil.getConnection();
+        
+        
             //Write SQL logic here
-            String sql = "SELECT * FROM Book";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery()){
             while(rs.next()){
                 Book book = new Book(rs.getInt("isbn"),
                         rs.getInt("author_id"),
@@ -54,22 +55,24 @@ public class BookDAO {
      * @return a book identified by isbn.
      */
     public Book getBookByIsbn(int isbn){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
+        String sql = "SELECT * FROM Book WHERE isbn = ?";
+        try (Connection connection = ConnectionUtil.getConnection();
+        
             //Write SQL logic here
-            String sql = "SELECT * FROM Book WHERE isbn = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             //write preparedStatement's setInt method here.
             preparedStatement.setInt(1, isbn);
 
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
-                Book book = new Book(rs.getInt("isbn"),
+            try (ResultSet rs = preparedStatement.executeQuery()){
+                if(rs.next()) {
+                return new Book(rs.getInt("isbn"),
                         rs.getInt("author_id"),
                         rs.getString("title"),
                         rs.getInt("copies_available"));
-                return book;
+                
+                }
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
@@ -85,11 +88,12 @@ public class BookDAO {
      * You only need to change the sql String and leverage PreparedStatement's setString and setInt methods.
      */
     public Book insertBook(Book book){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
+        String sql = "INSERT INTO Book(isbn, author_id, title, copies_available)";
+        try (Connection connection = ConnectionUtil.getConnection();
+        
             //Write SQL logic here
-            String sql = "INSERT INTO Book(isbn, author_id, title, copies_available)" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
 
             //write preparedStatement's setString and setInt methods here.
             preparedStatement.setInt(1, book.getIsbn());
@@ -110,15 +114,16 @@ public class BookDAO {
      * @returnall books with book count > 0.
      */
     public List<Book> getBooksWithBookCountOverZero(){
-        Connection connection = ConnectionUtil.getConnection();
+        String sql = "SELECT * FROM book WHERE copies_available > 0";
+        
         List<Book> books = new ArrayList<>();
-        try {
+        try (
             //Write SQL logic here
-            String sql = "SELECT * FROM book WHERE copies_available > 0";
+            Connection connection = ConnectionUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
+            ResultSet rs = preparedStatement.executeQuery()){
+              while(rs.next()){
                 Book book = new Book(rs.getInt("isbn"),
                         rs.getInt("author_id"),
                         rs.getString("title"),
