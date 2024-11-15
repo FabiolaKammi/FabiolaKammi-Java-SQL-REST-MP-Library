@@ -25,11 +25,11 @@ public class AuthorDAO {
      */
     public List<Author> getAllAuthors(){
         List<Author> authors = new ArrayList<>();
-        try {
+        String sql = "SELECT * FROM Author";
+        try (
             //Write SQL logic here
             Connection connection = ConnectionUtil.getConnection();
-            String sql = "SELECT * FROM Author";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet rs = preparedStatement.executeQuery()){
                 while(rs.next()){
                 Author author = new Author(rs.getInt("id"), rs.getString("name"));
@@ -48,21 +48,22 @@ public class AuthorDAO {
      * You only need to change the sql String and leverage PreparedStatements' setString methods.
      */
     public Author insertAuthor(Author author){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
+        String sql = "INSERT INTO Author (name) VALUES (?)";
+        
+        try (Connection connection = ConnectionUtil.getConnection();
 //          Write SQL logic here. You should only be inserting with the name column, so that the database may
 //          automatically generate a primary key.
-            String sql = "INSERT INTO Author (name) VALUES (?)" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
             //write preparedStatement's setString method here.
             preparedStatement.setString(1, author.getName());
-            
             preparedStatement.executeUpdate();
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-            if(pkeyResultSet.next()){
-                int generated_author_id = (int) pkeyResultSet.getLong(1);
+            try (ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys()){
+                if(pkeyResultSet.next()){
+                 int generated_author_id = (int) pkeyResultSet.getLong(1);
                 return new Author(generated_author_id, author.getName());
+                }
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
@@ -70,4 +71,4 @@ public class AuthorDAO {
         return null;
     }
 }
-}
+

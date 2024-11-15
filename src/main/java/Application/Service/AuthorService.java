@@ -22,7 +22,7 @@ public class AuthorService {
      * There is no need to change this constructor.
      */
     public AuthorService(){
-        authorDAO = new AuthorDAO();
+        this.authorDAO = new AuthorDAO();
     }
     /**
      * Constructor for a AuthorService when a AuthorDAO is provided.
@@ -40,7 +40,7 @@ public class AuthorService {
      * @return all authors
      */
     public List<Author> getAllAuthors() {
-        return AuthorDAO.getAllAuthors();
+        return authorDAO.getAllAuthors();
     }
     /**
      * TODO: Use the AuthorDAO to persist an author. The given Author will not have an id provided.
@@ -49,6 +49,6 @@ public class AuthorService {
      * @return The persisted author if the persistence is successful.
      */
     public Author addAuthor(Author author) {
-        return AuthorDAO.insertAuthor(author);
+        return authorDAO.insertAuthor(author);
     }
 }
