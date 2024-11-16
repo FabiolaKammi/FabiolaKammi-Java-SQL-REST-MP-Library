@@ -122,11 +122,9 @@ public class BookDAO {
                         rs.getInt("copies_available"));
                     books.add(book);
                 }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return books;
-    } 
-
-    
+    }     
 }
